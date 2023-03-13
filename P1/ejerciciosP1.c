@@ -73,15 +73,6 @@ BYTE getvideomode(){
 }
 
 //Funcion para cambiar el color del texto
-void printcaracter(char c){		//Esta función imprime un caracter por pantalla
-	union REGS inregs, outregs;
-	inregs.h.ah=0x09;
-	inregs.h.al=c;
-	inregs.h.bl=colorfondo << 4 | colortexto;
-	inregs.h.bh=0x00;
-	inregs.x.cx=1;
-	int86(0x10, &inregs, &outregs);
-}
 
 void textcolor(int color){	//Cambiaremos el color de texto global
 	colortexto=color;
@@ -102,6 +93,9 @@ void cputchar(char caracter){
 	union REGS inregs, outregs;
 	inregs.h.ah=0x09;
 	inregs.h.al=caracter;
+	inregs.h.bl=colorfondo << 4 | colortexto;
+	inregs.h.bh=0x00;
+	inregs.x.cx=1;
 	int86(0x10, &inregs, &outregs);
 }
 
@@ -130,17 +124,21 @@ int main(){
 	printf("\n");
 	
 	textcolor(2);
-	printcaracter('c');
+	cputchar('c');
 	printf("\n");
 	
 	textcolor(1);
 	textbackground(2);
-	printcarater('c');
+	cputchar('c');
 	
 	printf("\n");
 	
-	printf("Esperando lectura de caracter...");
+	printf("Esperando lectura de caracter...\n");
 	getche();
+	
+	printf("\nRealizando limpieza de pantalla, pulse una tecla");
+	pausa();
+	gotoxy(0,0);
 	
 	return 0;
 }
