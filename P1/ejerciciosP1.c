@@ -9,6 +9,15 @@
 BYTE MODOTEXTO=3;
 BYTE MODOVIDEO=4;
 
+unsigned char colorfondo=0;
+unsigned char colortexto=1;
+
+void pausa(){				//Espera pulsación de tecla
+	union REGS inregs, outregs;
+	inregs.h.ah=0x00;
+	int86(0x16, &inregs, &outregs);
+}
+
 //Función para ir a una coordenada (x,y)
 void gotoxy(int x, int y){
 	union REGS inregs, outregs;
@@ -64,44 +73,22 @@ BYTE getvideomode(){
 }
 
 //Funcion para cambiar el color del texto
-void color_first(int color, const char c){		//Esta función cambia el color de un caracter
+void printcaracter(char c){		//Esta función imprime un caracter por pantalla
 	union REGS inregs, outregs;
 	inregs.h.ah=0x09;
-	inregs.h.al=(int) c;
-	inregs.h.bl=color;
+	inregs.h.al=c;
+	inregs.h.bl=colorfondo << 4 | colortexto;
 	inregs.h.bh=0x00;
 	inregs.x.cx=1;
 	int86(0x10, &inregs, &outregs);
 }
 
-void textcolor(int color, const char *cadena){	//Cambiaremos el color de cada caracter de la cadena e imprimimos el resultado por pantalla
-	int i;
-	for(i=0; i < strlen(cadena); i++){
-		color_first(color,cadena[i]);
-		printf("%c", cadena[i]);
-	}
-	printf("\n");
+void textcolor(int color){	//Cambiaremos el color de texto global
+	colortexto=color;
 }
 
-//Funcion para cambiar el fondo del texto (background)
-void color_background(int color, const char c){
-	union REGS inregs, outregs;
-	inregs.h.ah=0x0B;
-	inregs.h.al=(int) c;
-	inregs.h.bl=0x00;
-	inregs.h.bh=color;
-	inregs.x.cx=1;
-	int86(0x10, &inregs, &outregs);
-	
-}
-
-void textbackground(int color, const char *cadena){
-	int i;
-	for(i=0; i < strlen(cadena); i++){
-		color_background(color,cadena[i]);
-		printf("%c", cadena[i]);
-	}
-	printf("\n");
+void textbackground(int color){ //Cambiaremos el color de fondo global
+	colorfondo=color;
 }
 
 
@@ -121,35 +108,39 @@ void cputchar(char caracter){
 //Funcion que obtiene un caracter por teclado y lo muestra en pantalla
 void getche(){
 	union REGS inregs, outregs;
-	int caracter;
-	
-	//primero leemos el caracter
 	inregs.h.ah=1;
 	int86(0x21, &inregs, &outregs);
-	caracter= outregs.h.al;
-	
-	//luego mostramos por pantalla el caracter
-	inregs.h.ah=2;
-	inregs.h.dl=caracter;
-	int86(0x21, &inregs, &outregs);
+
 }
 
 int main(){
+	int i;
 
-	/*gotoxy(00,00);				//Por defecto el cursor se movera a la parte superior de la consola
-	printf("\nCursor en esta posicion!");*/
-	
-	
-	/*printf("\nCursor invisible");
+	printf("\nCursor invisible");
 	setcursortype(0);
+	pausa();
 	
 	printf("\nCursor normal");
 	setcursortype(1);
+	pausa();
 	
 	printf("\nCursor grueso");
-	setcursortype(2);*/
-	textcolor(2,"Texto de primer plano");
-	textbackground(4,"Texto de fondo");
+	setcursortype(2);
+	pausa();
+	printf("\n");
+	
+	textcolor(2);
+	printcaracter('c');
+	printf("\n");
+	
+	textcolor(1);
+	textbackground(2);
+	printcarater('c');
+	
+	printf("\n");
+	
+	printf("Esperando lectura de caracter...");
+	getche();
 	
 	return 0;
 }
