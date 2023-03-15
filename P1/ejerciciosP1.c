@@ -72,6 +72,36 @@ BYTE getvideomode(){
 		return modo;
 }
 
+//Funcion que pinta un pixel en las coordenadas x,y del color indicado
+void pixel(int x, int y, BYTE c){
+	union REGS inregs, outregs;
+	inregs.x.cx=x;
+	inregs.x.dx=y;
+	inregs.h.al=c;
+	inregs.h.ah=0x0C;
+	int86(0x10, &inregs, &outregs);
+}
+
+//Función para pintar un cubo
+void pintaCubo(int esq_sup, int tamanio){
+	int i;
+	
+	setvideomode(MODOVIDEO);
+	
+	for(i=esq_sup; i<tamanio; i++){
+		pixel(i, esq_sup, 1);
+		pixel(i, tamanio, 1);
+	}
+	
+	for(i=esq_sup; i <= tamanio; i++){
+		pixel(esq_sup, i, 2);
+		pixel(tamanio, i, 2);
+	}
+	
+	pausa();
+	setvideomode(MODOTEXTO);
+}
+
 //Funcion para cambiar el color del texto
 
 void textcolor(int color){	//Cambiaremos el color de texto global
@@ -81,7 +111,6 @@ void textcolor(int color){	//Cambiaremos el color de texto global
 void textbackground(int color){ //Cambiaremos el color de fondo global
 	colorfondo=color;
 }
-
 
 //Funcion que limpia la pantalla, para ello escribiremos saltos de linea hasta que la pantalla quede "limpia"
 void clrscr(){
@@ -102,13 +131,18 @@ void cputchar(char caracter){
 //Funcion que obtiene un caracter por teclado y lo muestra en pantalla
 void getche(){
 	union REGS inregs, outregs;
+	int caracter;
+	
+	printf("Escribe un caracter");
 	inregs.h.ah=1;
 	int86(0x21, &inregs, &outregs);
-
+	
+	caracter=outregs.h.al;
+	printf("\nHas pulsado:");
+	cputchar(caracter);
 }
 
 int main(){
-	int i;
 
 	printf("\nCursor invisible");
 	setcursortype(0);
@@ -123,22 +157,21 @@ int main(){
 	pausa();
 	printf("\n");
 	
-	textcolor(2);
-	cputchar('c');
-	printf("\n");
-	
 	textcolor(1);
 	textbackground(2);
-	cputchar('c');
-	
+	cputchar('c');	
 	printf("\n");
 	
-	printf("Esperando lectura de caracter...\n");
 	getche();
 	
 	printf("\nRealizando limpieza de pantalla, pulse una tecla");
 	pausa();
+	clrscr();
 	gotoxy(0,0);
+	
+	printf("Cambiando a modo video, pulsa una tecla\n");
+	pausa();
+	pintaCubo(10, 100);
 	
 	return 0;
 }
