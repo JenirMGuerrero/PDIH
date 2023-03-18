@@ -1,0 +1,80 @@
+#include <stdio.h>
+#include <string.h>
+#include <math.h>
+#include <dos.h>
+
+#define BYTE unsigned char
+//Definimos las constantes para el cambio de modo
+BYTE MODOTEXTO=3;
+BYTE MODOVIDEO=4;
+
+//Función que establece el modo de video 3-Texto 4-Grafico
+void setvideomode(BYTE modo){
+	union REGS inregs, outregs;
+	inregs.h.ah=0x00;
+	inregs.h.al=modo;
+	int86(0x10, &inregs, &outregs);
+}
+
+//Funcion que pinta un pixel en las coordenadas x,y del color indicado
+void pixel(int x, int y, BYTE c){
+	union REGS inregs, outregs;
+	inregs.x.cx=x;
+	inregs.x.dx=y;
+	inregs.h.al=c;
+	inregs.h.ah=0x0C;
+	int86(0x10, &inregs, &outregs);
+}
+
+//Función para pintar un cubo
+void pintaCubo(int esq_sup, int tamanio){
+	int i;
+	
+	setvideomode(MODOVIDEO);
+	
+	for(i=esq_sup; i<tamanio; i++){
+		pixel(i, esq_sup, 1);
+		pixel(i, tamanio, 1);
+	}
+	
+	for(i=esq_sup; i <= tamanio; i++){
+		pixel(esq_sup, i, 2);
+		pixel(tamanio, i, 2);
+	}
+	
+	pausa();
+	setvideomode(MODOTEXTO);
+}
+
+int getchar(){
+	union REGS inregs, outregs;
+	int caracter;
+	
+	inregs.h.ah = 2;
+	int86(0x21, &inregs, &outregs);
+	
+	caracter=outregs.h.al;
+	return caracter;
+}
+
+void putchar(char c){
+	union REGS inregs, outregs;
+	inregs.h.ah=2;
+	inregs.h.dl=c;
+	int86(0x21, &inregs, &outregs);
+}
+
+int main(){
+	int tmp;
+	printf("\nPulse una tecla..");
+	tmp=getchar();
+	
+	printf("\nLa tecla pulsada es: ");
+	putchar((char)tmp);
+
+	printf("Cambiando a modo video, pulsa una tecla\n");
+	pausa();
+	pintaCubo(10, 100);
+	
+	return 0;
+}
