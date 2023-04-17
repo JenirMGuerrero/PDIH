@@ -55,7 +55,6 @@ int main(int argc, char *argv[]){
 	getch();
 	nodelay(stdscr,1);
 	
-	//do{
 	f_ball = max_f/2;
 	c_ball = max_c/2;
 	
@@ -164,26 +163,43 @@ int main(int argc, char *argv[]){
 		default:
 			break;
 		}
-	}
-	
-
-		/*touchwin(window);
-		wbkgd(window, COLOR_PAIR(2));
-		box(window, '|', '-');
-	
-		mvwprintw(window, 5, 45, "EL JUEGO HA ACABADO");
-	
-		if(res_j1 > res_j2){
-			mvwprintw(window, 10, 20, "HA GANADO EL JUGADOR 1, PULSE F PARA SALIR");
-			getch();
-		}else{
-			mvwprintw(window, 10, 20, "HA GANADO EL JUGADOR 1, PULSE F PARA SALIR");
-			getch();
-		}
-	
-		wrefresh(window);
 		
-	}while(getch() != 'f');*/
+		if(res_j1 == final_juego || res_j2 == final_juego){
+		
+			clear();
+			
+			if(res_j1 > res_j2){
+				mvwprintw(window, 5, 45, "FIN DEL JUEGO");
+	
+				mvwprintw(window, 10, 20, "HA GANADO EL JUGADOR 1:");
+				mvwprintw(window, 12, 20, "R--->REINICIAR PARTIDA");
+			}else{
+				mvwprintw(window, 5, 45, "FIN DEL JUEGO");
+	
+				mvwprintw(window, 10, 20, "HA GANADO EL JUGADOR 2:");
+				mvwprintw(window, 12, 20, "R--->REINICIAR PARTIDA");
+			}
+			
+			wrefresh(window);
+
+			if(getchar() == 'r'){
+				f_ball = max_f/2;
+				c_ball = max_c/2;
+	
+				res_j1=0;
+				res_j2=0;
+	
+				pala_j1_c=1;
+				pala_j1_f=(max_f/2) -4;
+		
+				pala_j2_c=max_c-1;
+				pala_j2_f=(max_f/2) -4;
+			}else{
+				endwin();
+				exit(0);
+			}
+		}
+	}
 	
 	endwin();
 	
