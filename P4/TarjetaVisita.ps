@@ -1,0 +1,78 @@
+%!
+
+%Tarjeta
+newpath
+150 550 moveto
+150 750 lineto
+450 750 lineto
+450 550 lineto
+closepath
+
+0.95 setgray
+fill
+stroke
+
+
+%Foto
+newpath
+220 660 35 0 360 arc
+closepath
+
+0.7 setgray
+fill
+newpath
+0 setgray
+220 660 35 0 360 arc
+closepath
+stroke
+
+
+%Nombre
+/Arial-bold findfont
+9 scalefont
+setfont
+0 setgray
+
+newpath
+335 660 moveto
+(Drago Kovacevic) show
+closepath
+stroke
+
+
+%Oficio
+/Arial findfont
+8 scalefont
+setfont
+0.5 setgray
+
+newpath
+335 650 moveto
+(Ejecutivo de cuentas) show
+closepath
+stroke
+
+
+%Datos personales
+/Arial findfont
+6 scalefont
+setfont
+0.5 setgray
+
+newpath
+345 620 moveto
+(P. de la Castellana, 141) show
+339 612 moveto
+(Local 2 - Edificio Cuzco IV) show
+372 604 moveto
+(28046 Madrid) show
+323 596 moveto
+(Tels. 914 174 550 / 669 896 224) show
+362 588 moveto
+(drago@serotel.com) show
+closepath
+stroke
+
+
+showpage
+%%EOF
